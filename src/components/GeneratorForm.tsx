@@ -19,6 +19,7 @@ import { api } from '@/lib/api';
 import type { GeneratorOptions, KnowledgeProfile, TextProviderOption } from '@/lib/types';
 import { Field, SegmentedControl, Select, TextArea, TextInput, Toggle } from './ui';
 import { KeywordInput } from './KeywordInput';
+import { KeywordSetPicker } from './KeywordSetPicker';
 
 const LANGUAGES = [
   'English',
@@ -70,6 +71,7 @@ export function GeneratorForm() {
   const [includeToc, setIncludeToc] = useState(true);
   const [textModel, setTextModel] = useState('');
   const [textProvider, setTextProvider] = useState<string>('');
+  const [keywordSetIds, setKeywordSetIds] = useState<string[]>([]);
   const [knowledge, setKnowledge] = useState<KnowledgeProfile | null>(null);
   const [useKnowledgeBase, setUseKnowledgeBase] = useState(false);
 
@@ -108,7 +110,7 @@ export function GeneratorForm() {
           .split(',')
           .map((k: string) => k.trim())
           .filter(Boolean)
-          .slice(0, 15),
+          .slice(0, 50),
       );
     }
   }, [searchParams]);
@@ -127,6 +129,7 @@ export function GeneratorForm() {
       const { id } = await api.generate({
         topic: topic.trim(),
         keywords,
+        keywordSetIds,
         language,
         tone,
         audience: audience.trim() || 'general readers',
@@ -206,6 +209,17 @@ export function GeneratorForm() {
       <div className="mt-5">
         <Field label="Target keywords" hint="Enter or comma to add">
           <KeywordInput keywords={keywords} onChange={setKeywords} />
+        </Field>
+      </div>
+
+      {/* Saved keyword sets */}
+      <div className="mt-4">
+        <Field label="Keyword sets" hint="reusable groups">
+          <KeywordSetPicker
+            selectedIds={keywordSetIds}
+            onChange={setKeywordSetIds}
+            language={language}
+          />
         </Field>
       </div>
 

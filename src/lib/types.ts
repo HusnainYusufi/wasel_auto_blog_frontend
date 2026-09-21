@@ -143,6 +143,7 @@ export interface GenerateRequest {
   imageStyle: string;
   includeFaq: boolean;
   includeToc: boolean;
+  keywordSetIds?: string[];
   textProvider?: string;
   textModel?: string;
   useKnowledgeBase?: boolean;
@@ -192,4 +193,24 @@ export interface KnowledgeProfile {
   suggestedTopics?: SuggestedTopic[];
   sourceCount?: number;
   generatedAt?: string | null;
+}
+
+export interface KeywordSet {
+  id: string;
+  name: string;
+  note: string | null;
+  keywords: string[];
+  language: string;
+  pinned: boolean;
+  useCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface KeywordSetInput {
+  name: string;
+  note?: string;
+  keywords: string[];
+  language?: string;
+  pinned?: boolean;
 }

@@ -6,7 +6,7 @@ import { X, Hash } from 'lucide-react';
 export function KeywordInput({
   keywords,
   onChange,
-  max = 15,
+  max = 50,
 }: {
   keywords: string[];
   onChange: (keywords: string[]) => void;
@@ -16,7 +16,7 @@ export function KeywordInput({
 
   const commit = (raw: string) => {
     const additions = raw
-      .split(',')
+      .split(/[\n,;]/)
       .map((k) => k.trim())
       .filter(Boolean);
     if (!additions.length) return;
@@ -44,6 +44,7 @@ export function KeywordInput({
       {keywords.map((keyword) => (
         <span
           key={keyword}
+          dir="auto"
           className="animate-rise inline-flex items-center gap-1 rounded-lg bg-brand-50 py-1 pl-2 pr-1 text-[12px] font-medium text-brand-700 ring-1 ring-brand-100"
         >
           <Hash className="h-3 w-3 text-brand-400" strokeWidth={2.4} />
@@ -66,6 +67,7 @@ export function KeywordInput({
         onBlur={() => commit(draft)}
         disabled={keywords.length >= max}
         placeholder={keywords.length ? 'Add another…' : 'seo keyword, long tail phrase…'}
+        dir="auto"
         className="min-w-[9rem] flex-1 bg-transparent px-1.5 py-1 text-sm text-ink-800 outline-none placeholder:text-ink-400 disabled:cursor-not-allowed"
       />
     </div>

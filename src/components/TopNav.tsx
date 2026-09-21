@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BrainCircuit, Feather, LibraryBig, LogOut, Sparkles } from 'lucide-react';
+import { BrainCircuit, Feather, LibraryBig, LogOut, Sparkles, Tags } from 'lucide-react';
 import { useAuth } from './AuthProvider';
 
 const LINKS = [
   { href: '/', label: 'Studio', icon: Sparkles },
+  { href: '/keywords', label: 'Keywords', icon: Tags },
   { href: '/knowledge', label: 'Knowledge', icon: BrainCircuit },
   { href: '/library', label: 'Library', icon: LibraryBig },
 ];

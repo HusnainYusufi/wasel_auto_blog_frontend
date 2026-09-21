@@ -20,6 +20,7 @@ Open **http://localhost:3211**. The backend must be running on port 3332 first.
 | `/` | **Studio** — hero, generator console (topic, keyword chips, depth, tone, language, image count, plus advanced controls), and a strip of recent articles. |
 | `/blog/[id]` | **Live stage** while generating: progress bar, five-step rail, streaming event log, shimmering skeleton. Swaps to the **article view** on completion — hero image, stats, and Article / SEO / Images / Markdown tabs. |
 | `/login` | Sign-in. Every other route redirects here when signed out, preserving the intended destination in `?next=`. |
+| `/keywords` | **Keyword sets** — create, edit, pin and delete reusable keyword groups. |
 | `/knowledge` | **Knowledge base** — paste blog URLs to crawl, see the derived niche profile, house style, content gaps, and suggested topics. "Write this one" sends a suggestion straight into the studio, prefilled. |
 | `/library` | All generated articles with search and status filters. |
 
@@ -53,6 +54,8 @@ src/
 ├── components/
 │   ├── AuthProvider.tsx      Session restore, route guard, logout
 │   ├── ReviewPanel.tsx       Approve / reject / reopen + history timeline
+│   ├── KeywordSetPicker.tsx  Select/create sets inline in the studio
+│   ├── KeywordSetManager.tsx Full set CRUD
 │   ├── KnowledgeManager.tsx  Crawl URLs, niche profile, topic suggestions
 │   ├── GeneratorForm.tsx     The console
 │   ├── GenerationStage.tsx   SSE progress experience
@@ -61,6 +64,14 @@ src/
 │   └── ui.tsx                Field / Select / Toggle / Segmented / Badge
 └── lib/api.ts                Typed client for the backend
 ```
+
+## Bidirectional text
+
+Arabic keywords, set names and titles carry `dir="auto"` so the browser resolves direction
+from the content itself. Alignment needs a nudge that direction alone does not give, which
+the `bidi` utility in `globals.css` provides — deliberately scoped to text elements rather
+than applied globally by attribute, since a blanket `[dir="auto"]` rule silently overrode
+the `display` of every flex container that also carried the attribute.
 
 ## Auth
 

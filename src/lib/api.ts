@@ -7,6 +7,8 @@ import type {
   KnowledgeList,
   KnowledgeProfile,
   AuditEntry,
+  KeywordSet,
+  KeywordSetInput,
 } from './types';
 
 export const API_URL =
@@ -174,6 +176,27 @@ export const api = {
     `${API_URL}/blogs/${id}/export?format=${format}`,
 
   streamUrl: (id: string) => `${API_URL}/blogs/${id}/stream`,
+
+  keywordSets: {
+    list: () => request<{ total: number; items: KeywordSet[] }>('/keyword-sets'),
+
+    create: (payload: KeywordSetInput) =>
+      request<KeywordSet>('/keyword-sets', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      }),
+
+    update: (id: string, payload: Partial<KeywordSetInput>) =>
+      request<KeywordSet>(`/keyword-sets/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      }),
+
+    remove: (id: string) =>
+      request<{ id: string; deleted: boolean }>(`/keyword-sets/${id}`, {
+        method: 'DELETE',
+      }),
+  },
 
   knowledge: {
     list: () => request<KnowledgeList>('/knowledge'),

@@ -231,3 +231,13 @@ body {
   font-size: 0.78rem;
   color: var(--color-ink-400);
 }
+
+/* dir="auto" sets direction but not alignment, so RTL text would otherwise sit
+   centred inside a left-aligned block. Scoped to the text utility below rather
+   than every [dir] element — a global rule here silently overrode the display
+   of any flex container that also carried dir="auto". */
+@utility bidi {
+  text-align: start;
+}
+
+input[dir="auto"], textarea[dir="auto"] { text-align: start; }
