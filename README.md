@@ -23,8 +23,12 @@ Open **http://localhost:3211**. The backend must be running on port 3332 first.
 | `/knowledge` | **Knowledge base** — paste blog URLs to crawl, see the derived niche profile, house style, content gaps, and suggested topics. "Write this one" sends a suggestion straight into the studio, prefilled. |
 | `/library` | All generated articles with search and status filters. |
 
-The generator form is populated from `GET /api/blogs/options`, so tones, models,
-lengths, and aspect ratios always match what the backend actually supports.
+The generator form is populated from `GET /api/blogs/options`, so tones, lengths, aspect
+ratios and available engines always match what the backend actually supports.
+
+**Writing engine** and **Model** live in the advanced controls. Engines without an API key
+are listed but disabled, and switching engine resets the model list to that provider's
+default, since model ids are provider-specific.
 
 ## Design system
 

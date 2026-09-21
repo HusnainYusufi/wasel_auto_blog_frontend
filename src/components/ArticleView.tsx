@@ -187,7 +187,7 @@ export function ArticleView({
               {blog.images.length} images
             </span>
             <span className="ml-auto rounded-full bg-brand-50 px-2.5 py-1 font-medium text-brand-600">
-              {blog.textModel}
+              {blog.textProvider === 'gemini' ? 'Gemini' : 'MiniMax'} · {blog.textModel}
             </span>
           </div>
         </div>

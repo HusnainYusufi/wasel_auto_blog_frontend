@@ -27,6 +27,7 @@ export interface BlogSummary {
   heroImageUrl: string | null;
   language: string;
   tone: string;
+  textProvider: string;
   textModel: string;
   createdAt: string;
   completedAt: string | null;
@@ -104,15 +105,27 @@ export interface PipelineStep {
   to: number;
 }
 
+export interface TextProviderOption {
+  id: 'minimax' | 'gemini';
+  label: string;
+  configured: boolean;
+  models: string[];
+  defaultModel: string | null;
+}
+
 export interface GeneratorOptions {
   tones: string[];
   pointsOfView: string[];
   imageStyles: string[];
   aspectRatios: string[];
-  textModels: string[];
+  textProviders: TextProviderOption[];
   lengthPresets: Array<{ key: string; label: string; words: number; sections: number }>;
   steps: PipelineStep[];
-  defaults: { textModel: string; imageModel: string };
+  defaults: {
+    textProvider: 'minimax' | 'gemini' | null;
+    textModel: string | null;
+    imageModel: string;
+  };
 }
 
 export interface GenerateRequest {
@@ -130,6 +143,7 @@ export interface GenerateRequest {
   imageStyle: string;
   includeFaq: boolean;
   includeToc: boolean;
+  textProvider?: string;
   textModel?: string;
   useKnowledgeBase?: boolean;
   knowledgeSourceIds?: string[];

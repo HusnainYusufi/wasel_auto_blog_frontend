@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
-import type { GeneratorOptions, KnowledgeProfile } from '@/lib/types';
+import type { GeneratorOptions, KnowledgeProfile, TextProviderOption } from '@/lib/types';
 import { Field, SegmentedControl, Select, TextArea, TextInput, Toggle } from './ui';
 import { KeywordInput } from './KeywordInput';
 
@@ -69,6 +69,7 @@ export function GeneratorForm() {
   const [includeFaq, setIncludeFaq] = useState(true);
   const [includeToc, setIncludeToc] = useState(true);
   const [textModel, setTextModel] = useState('');
+  const [textProvider, setTextProvider] = useState<string>('');
   const [knowledge, setKnowledge] = useState<KnowledgeProfile | null>(null);
   const [useKnowledgeBase, setUseKnowledgeBase] = useState(false);
 
@@ -77,7 +78,8 @@ export function GeneratorForm() {
       .options()
       .then((data) => {
         setOptions(data);
-        setTextModel(data.defaults.textModel);
+        setTextProvider(data.defaults.textProvider ?? '');
+        setTextModel(data.defaults.textModel ?? '');
       })
       .catch(() =>
         toast.error('Could not reach the API', {
@@ -111,6 +113,9 @@ export function GeneratorForm() {
     }
   }, [searchParams]);
 
+  const activeProvider: TextProviderOption | undefined =
+    options?.textProviders.find((p) => p.id === textProvider);
+
   const submit = async () => {
     if (topic.trim().length < 3) {
       toast.error('Give your article a topic first');
@@ -134,6 +139,7 @@ export function GeneratorForm() {
         imageStyle,
         includeFaq,
         includeToc,
+        textProvider: textProvider || undefined,
         textModel: textModel || undefined,
         useKnowledgeBase,
       });
@@ -328,9 +334,29 @@ export function GeneratorForm() {
                 </Select>
               </Field>
 
-              <Field label="MiniMax model">
+              <Field label="Writing engine">
+                <Select
+                  value={textProvider}
+                  onChange={(e) => {
+                    const next = e.target.value;
+                    setTextProvider(next);
+                    // Models are provider-specific, so move to that provider's default.
+                    const picked = options?.textProviders.find((p) => p.id === next);
+                    setTextModel(picked?.defaultModel ?? picked?.models[0] ?? '');
+                  }}
+                >
+                  {(options?.textProviders ?? []).map((p) => (
+                    <option key={p.id} value={p.id} disabled={!p.configured}>
+                      {p.label}
+                      {p.configured ? '' : ' — no API key'}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+
+              <Field label="Model">
                 <Select value={textModel} onChange={(e) => setTextModel(e.target.value)}>
-                  {(options?.textModels ?? []).map((m) => (
+                  {(activeProvider?.models ?? []).map((m) => (
                     <option key={m} value={m}>
                       {m}
                     </option>
