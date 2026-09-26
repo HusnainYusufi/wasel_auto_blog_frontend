@@ -80,6 +80,9 @@ export interface OutlineSection {
 
 export interface BlogDetail extends BlogSummary {
   contentMarkdown: string | null;
+  altLanguage: string | null;
+  altTitle: string | null;
+  altContentMarkdown: string | null;
   contentHtml: string | null;
   outline: { sections?: OutlineSection[]; [key: string]: unknown } | null;
   seo: SeoData | null;
@@ -144,6 +147,10 @@ export interface GenerateRequest {
   includeFaq: boolean;
   includeToc: boolean;
   keywordSetIds?: string[];
+  secondaryKeywords?: string[];
+  /** Also produce the article in this language, in the same run. */
+  altLanguage?: string;
+  productSourceIds?: string[];
   textProvider?: string;
   textModel?: string;
   useKnowledgeBase?: boolean;

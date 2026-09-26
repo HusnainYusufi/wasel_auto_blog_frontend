@@ -46,9 +46,14 @@ export function ArticleView({
   onRefresh: () => void;
 }) {
   const [tab, setTab] = useState<TabKey>('article');
+  // Which language body is on screen. 'alt' only exists on bilingual articles.
+  const [lang, setLang] = useState<'main' | 'alt'>('main');
 
   // The hero renders the title, so the body starts after the leading H1.
-  const body = (blog.contentMarkdown ?? '').replace(/^\s*#\s+.*(?:\n+|$)/, '');
+  const showingAlt = lang === 'alt' && !!blog.altContentMarkdown;
+  const activeMarkdown =
+    (showingAlt ? blog.altContentMarkdown : blog.contentMarkdown) ?? '';
+  const body = activeMarkdown.replace(/^\s*#\s+.*(?:\n+|$)/, '');
 
   const [regenerating, setRegenerating] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -100,7 +105,7 @@ export function ArticleView({
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
           <button
-            onClick={() => copyText(blog.contentMarkdown ?? '', 'Markdown')}
+            onClick={() => copyText(activeMarkdown, 'Markdown')}
             className="flex items-center gap-1.5 rounded-xl border border-hairline bg-white/70 px-3 py-2 text-[12.5px] font-medium text-ink-600 transition-all hover:border-brand-300 hover:text-brand-600"
           >
             <Copy className="h-3.5 w-3.5" />
@@ -163,9 +168,36 @@ export function ArticleView({
             ))}
           </div>
 
-          <h1 className="text-[1.9rem] font-bold leading-[1.12] tracking-[-0.028em] text-ink-900 sm:text-[2.5rem]">
-            {blog.title}
+          <h1
+            dir="auto"
+            className="bidi text-[1.9rem] font-bold leading-[1.12] tracking-[-0.028em] text-ink-900 sm:text-[2.5rem]"
+          >
+            {showingAlt ? (blog.altTitle ?? blog.title) : blog.title}
           </h1>
+
+          {/* Only bilingual articles get a language switch. */}
+          {blog.altContentMarkdown ? (
+            <div className="mt-4 inline-flex rounded-xl bg-white/70 p-1 ring-1 ring-hairline">
+              {(
+                [
+                  ['main', blog.language],
+                  ['alt', blog.altLanguage ?? 'Alt'],
+                ] as const
+              ).map(([key, label]) => (
+                <button
+                  key={key}
+                  onClick={() => setLang(key)}
+                  className={`rounded-lg px-4 py-1.5 text-[12.5px] font-medium transition-all ${
+                    lang === key
+                      ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/30'
+                      : 'text-ink-500 hover:text-ink-800'
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           {blog.metaDescription ? (
             <p className="mt-3 max-w-2xl text-[14.5px] leading-relaxed text-ink-500">
@@ -323,11 +355,11 @@ export function ArticleView({
           <div className="glass-strong rounded-4xl p-5">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-[12.5px] font-medium text-ink-600">
-                Raw Markdown · {blog.wordCount.toLocaleString()} words
+                Raw Markdown · {activeMarkdown.split(/\s+/).filter(Boolean).length.toLocaleString()} words
               </span>
               <div className="flex gap-2">
                 <button
-                  onClick={() => copyText(blog.contentMarkdown ?? '', 'Markdown')}
+                  onClick={() => copyText(activeMarkdown, 'Markdown')}
                   className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1.5 text-[11.5px] font-medium text-ink-600 ring-1 ring-hairline transition-colors hover:text-brand-600"
                 >
                   <Copy className="h-3 w-3" />
@@ -343,7 +375,7 @@ export function ArticleView({
               </div>
             </div>
             <pre className="max-h-[38rem] overflow-auto whitespace-pre-wrap rounded-2xl bg-ink-900 p-5 text-[12.5px] leading-relaxed text-brand-100">
-              {blog.contentMarkdown}
+              {activeMarkdown}
             </pre>
           </div>
         ) : null}

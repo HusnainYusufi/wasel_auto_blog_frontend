@@ -20,6 +20,7 @@ import type { GeneratorOptions, KnowledgeProfile, TextProviderOption } from '@/l
 import { Field, SegmentedControl, Select, TextArea, TextInput, Toggle } from './ui';
 import { KeywordInput } from './KeywordInput';
 import { KeywordSetPicker } from './KeywordSetPicker';
+import { ProductPicker } from './ProductPicker';
 
 const LANGUAGES = [
   'English',
@@ -72,6 +73,9 @@ export function GeneratorForm() {
   const [textModel, setTextModel] = useState('');
   const [textProvider, setTextProvider] = useState<string>('');
   const [keywordSetIds, setKeywordSetIds] = useState<string[]>([]);
+  const [secondaryKeywords, setSecondaryKeywords] = useState<string[]>([]);
+  const [altLanguage, setAltLanguage] = useState('');
+  const [productSourceIds, setProductSourceIds] = useState<string[]>([]);
   const [knowledge, setKnowledge] = useState<KnowledgeProfile | null>(null);
   const [useKnowledgeBase, setUseKnowledgeBase] = useState(false);
 
@@ -130,6 +134,9 @@ export function GeneratorForm() {
         topic: topic.trim(),
         keywords,
         keywordSetIds,
+        secondaryKeywords,
+        altLanguage: altLanguage || undefined,
+        productSourceIds,
         language,
         tone,
         audience: audience.trim() || 'general readers',
@@ -212,6 +219,13 @@ export function GeneratorForm() {
         </Field>
       </div>
 
+      {/* Secondary keywords */}
+      <div className="mt-4">
+        <Field label="Secondary keywords" hint="supporting, lower priority">
+          <KeywordInput keywords={secondaryKeywords} onChange={setSecondaryKeywords} />
+        </Field>
+      </div>
+
       {/* Saved keyword sets */}
       <div className="mt-4">
         <Field label="Keyword sets" hint="reusable groups">
@@ -239,7 +253,7 @@ export function GeneratorForm() {
       </div>
 
       {/* Core controls */}
-      <div className="mt-5 grid gap-4 sm:grid-cols-3">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Tone">
           <Select value={tone} onChange={(e) => setTone(e.target.value)}>
             {(options?.tones ?? []).map((t) => (
@@ -253,6 +267,17 @@ export function GeneratorForm() {
         <Field label="Language">
           <Select value={language} onChange={(e) => setLanguage(e.target.value)}>
             {LANGUAGES.map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </Select>
+        </Field>
+
+        <Field label="Also write in" hint="one click, both languages">
+          <Select value={altLanguage} onChange={(e) => setAltLanguage(e.target.value)}>
+            <option value="">Single language only</option>
+            {LANGUAGES.filter((l) => l !== language).map((l) => (
               <option key={l} value={l}>
                 {l}
               </option>
@@ -376,6 +401,13 @@ export function GeneratorForm() {
                     </option>
                   ))}
                 </Select>
+              </Field>
+
+              <Field label="Product links to embed" hint="from crawled pages" className="sm:col-span-2">
+                <ProductPicker
+                  selectedIds={productSourceIds}
+                  onChange={setProductSourceIds}
+                />
               </Field>
 
               <Field label="Closing call to action" hint="optional" className="sm:col-span-2">
