@@ -11,6 +11,7 @@ import {
   Loader2,
   PenLine,
   Settings2,
+  Languages,
   Sparkles,
   Wand2,
 } from 'lucide-react';
@@ -217,19 +218,47 @@ export function GeneratorForm() {
         ))}
       </div>
 
-      {/* Second-language title */}
-      {altLanguage ? (
-        <div className="mt-3">
-          <Field label={`${altLanguage} title`} hint="exact H1 for that version">
+      {/* Second title. Always visible, so it is obvious both languages are
+          supported without first hunting for the language selector. */}
+      <div className="mt-4 rounded-2xl border border-dashed border-brand-200 bg-brand-50/40 p-4">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Languages className="h-4 w-4 shrink-0 text-brand-500" />
+          <span className="text-[13px] font-semibold text-ink-800">
+            Second language
+          </span>
+          <Select
+            value={altLanguage}
+            onChange={(e) => setAltLanguage(e.target.value)}
+            className="ml-auto max-w-[12rem]"
+          >
+            <option value="">Off — single language</option>
+            {LANGUAGES.filter((l) => l !== language).map((l) => (
+              <option key={l} value={l}>
+                {l}
+              </option>
+            ))}
+          </Select>
+        </div>
+
+        {altLanguage ? (
+          <Field
+            label={`${altLanguage} title`}
+            hint="used as the exact H1 for that version"
+          >
             <TextInput
               value={altTopic}
               onChange={(e) => setAltTopic(e.target.value)}
               dir="auto"
-              placeholder="Single, Double or King? Choosing Your Mattress Size"
+              placeholder="Single, Double or King? Choosing Your Mattress Size Before the Offers End"
             />
           </Field>
-        </div>
-      ) : null}
+        ) : (
+          <p className="text-[12px] leading-relaxed text-ink-500">
+            Pick a language to also write this article in. You can give that
+            version its own title.
+          </p>
+        )}
+      </div>
 
       {/* Keywords */}
       <div className="mt-5">
@@ -286,17 +315,6 @@ export function GeneratorForm() {
         <Field label="Language">
           <Select value={language} onChange={(e) => setLanguage(e.target.value)}>
             {LANGUAGES.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </Select>
-        </Field>
-
-        <Field label="Also write in" hint="one click, both languages">
-          <Select value={altLanguage} onChange={(e) => setAltLanguage(e.target.value)}>
-            <option value="">Single language only</option>
-            {LANGUAGES.filter((l) => l !== language).map((l) => (
               <option key={l} value={l}>
                 {l}
               </option>
