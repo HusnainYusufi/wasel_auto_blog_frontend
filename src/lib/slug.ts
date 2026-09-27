@@ -23,3 +23,23 @@ export function textOf(node: ReactNode): string {
   }
   return '';
 }
+
+/** Parses "Name | https://url" lines into product link objects. */
+export function parseProductLines(
+  text: string,
+): Array<{ name: string; url: string }> {
+  return text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      // Split on the last pipe so names containing one still work.
+      const cut = line.lastIndexOf('|');
+      if (cut === -1) return null;
+      const name = line.slice(0, cut).trim();
+      const url = line.slice(cut + 1).trim();
+      return name && /^https?:\/\//i.test(url) ? { name, url } : null;
+    })
+    .filter((p): p is { name: string; url: string } => p !== null)
+    .slice(0, 12);
+}

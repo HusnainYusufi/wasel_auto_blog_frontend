@@ -20,7 +20,8 @@ import type { GeneratorOptions, KnowledgeProfile, TextProviderOption } from '@/l
 import { Field, SegmentedControl, Select, TextArea, TextInput, Toggle } from './ui';
 import { KeywordInput } from './KeywordInput';
 import { KeywordSetPicker } from './KeywordSetPicker';
-import { ProductPicker } from './ProductPicker';
+import { parseProductLines } from '@/lib/slug';
+
 
 const LANGUAGES = [
   'English',
@@ -75,7 +76,9 @@ export function GeneratorForm() {
   const [keywordSetIds, setKeywordSetIds] = useState<string[]>([]);
   const [secondaryKeywords, setSecondaryKeywords] = useState<string[]>([]);
   const [altLanguage, setAltLanguage] = useState('');
-  const [productSourceIds, setProductSourceIds] = useState<string[]>([]);
+  const [altTopic, setAltTopic] = useState('');
+  const [brandUrl, setBrandUrl] = useState('');
+  const [productsText, setProductsText] = useState('');
   const [knowledge, setKnowledge] = useState<KnowledgeProfile | null>(null);
   const [useKnowledgeBase, setUseKnowledgeBase] = useState(false);
 
@@ -136,7 +139,9 @@ export function GeneratorForm() {
         keywordSetIds,
         secondaryKeywords,
         altLanguage: altLanguage || undefined,
-        productSourceIds,
+        altTopic: altTopic.trim() || undefined,
+        brandUrl: brandUrl.trim() || undefined,
+        productLinks: parseProductLines(productsText),
         language,
         tone,
         audience: audience.trim() || 'general readers',
@@ -211,6 +216,20 @@ export function GeneratorForm() {
           </button>
         ))}
       </div>
+
+      {/* Second-language title */}
+      {altLanguage ? (
+        <div className="mt-3">
+          <Field label={`${altLanguage} title`} hint="exact H1 for that version">
+            <TextInput
+              value={altTopic}
+              onChange={(e) => setAltTopic(e.target.value)}
+              dir="auto"
+              placeholder="Single, Double or King? Choosing Your Mattress Size"
+            />
+          </Field>
+        </div>
+      ) : null}
 
       {/* Keywords */}
       <div className="mt-5">
@@ -403,10 +422,26 @@ export function GeneratorForm() {
                 </Select>
               </Field>
 
-              <Field label="Product links to embed" hint="from crawled pages" className="sm:col-span-2">
-                <ProductPicker
-                  selectedIds={productSourceIds}
-                  onChange={setProductSourceIds}
+              <Field
+                label="Product links"
+                hint="one per line: Name | https://..."
+                className="sm:col-span-2"
+              >
+                <TextArea
+                  rows={3}
+                  value={productsText}
+                  onChange={(e) => setProductsText(e.target.value)}
+                  dir="auto"
+                  placeholder={'رويال بوكس بمرتبة واشنطن 15 قطعة | https://legendsleepsa.com/ar/category/dGRvPa'}
+                  className="font-mono text-[12px]"
+                />
+              </Field>
+
+              <Field label="Brand URL" hint="brand name links here">
+                <TextInput
+                  value={brandUrl}
+                  onChange={(e) => setBrandUrl(e.target.value)}
+                  placeholder="https://legendsleepsa.com/"
                 />
               </Field>
 

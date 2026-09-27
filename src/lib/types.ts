@@ -150,6 +150,9 @@ export interface GenerateRequest {
   secondaryKeywords?: string[];
   /** Also produce the article in this language, in the same run. */
   altLanguage?: string;
+  altTopic?: string;
+  brandUrl?: string;
+  productLinks?: Array<{ name: string; url: string }>;
   productSourceIds?: string[];
   textProvider?: string;
   textModel?: string;
